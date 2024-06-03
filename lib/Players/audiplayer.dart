@@ -90,6 +90,7 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
         )
     ];
 
+   /*hcxbvjhxgkvxhgjxhkhsd*/
     audioHandler.addQueueItems(_mediaItems);
 
     _durations = List<Duration>.filled(bhajanAudioUrls.length, Duration());
