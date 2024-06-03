@@ -5,9 +5,12 @@ import 'package:just_audio_background/just_audio_background.dart';
 
 
 import 'DocumnetWork/Editpdf.dart';
-import 'DocumnetWork/PdfDownload.dart';
+import 'DocumnetWork/pdfconverter.dart';
+import 'MapWork/Mapdemo.dart';
 import 'Players/YoutubePlayerScreen.dart';
 import 'Players/audiplayer.dart';
+import 'createcustomview/cusom view.dart';
+import 'imagework.dart';
 
 
 class Dashboard extends StatefulWidget {
@@ -80,7 +83,7 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     onTap: () async {
 
-                      //Navigator.of(context).push(MaterialPageRoute(builder: (context) => PlayerPage()));
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => PlayerPage()));
                     },
                   ),
                 ],
@@ -139,7 +142,7 @@ class _DashboardState extends State<Dashboard> {
                       ),
                     ),
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => PdfSearchPage(pdfPath: 'assets/file-sample_150kB.pdf')));
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => CameraToPdfPage()));
                     },
                   ),
                 ],
@@ -187,7 +190,7 @@ class _DashboardState extends State<Dashboard> {
                           Icon(Icons.bluetooth, size: 50, color: Colors.white),
                           SizedBox(height: 10),
                           Text(
-                            'Blue',
+                            'Map',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 18.0,
@@ -198,7 +201,69 @@ class _DashboardState extends State<Dashboard> {
                       ),
                     ),
                     onTap: () {
-                      // Add functionality for "Blue" container
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => MapPage()));
+
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+
+            /*================*/
+            Container(
+              margin: EdgeInsets.all(10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  GestureDetector(
+                    child: Container(
+                      height: 160,
+                      width: 160.0,
+                      color: Colors.blue,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.picture_as_pdf, size: 50, color: Colors.white),
+                          SizedBox(height: 10),
+                          Text(
+                            'Custom view',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => CustomizedViewEditor()));
+                    },
+                  ),
+                  GestureDetector(
+                    child: Container(
+                      height: 160,
+                      width: 160.0,
+                      color: Colors.blue,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.edit, size: 50, color: Colors.white),
+                          SizedBox(height: 10),
+                          Text(
+                            'Text Reader',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    onTap: () {
+                     // Navigator.of(context).push(MaterialPageRoute(builder: (context) => TextReaderPage()));
                     },
                   ),
                 ],
