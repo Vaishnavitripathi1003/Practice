@@ -33,6 +33,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.detectionapp"
@@ -52,7 +53,9 @@ android {
         }
     }
 }
-
+dependencies {
+    implementation 'com.google.mlkit:text-recognition:16.0.0' // Or the latest version
+}
 flutter {
     source = "../.."
 }
