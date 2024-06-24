@@ -59,7 +59,8 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
             bottom: 20,
             left: 0,
             right: 0,
-            child: Column(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 ElevatedButton(
                   onPressed: _isProcessing ? null : _scanBarcode,
@@ -124,7 +125,6 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
         setState(() {
           _barcodeResult = barcodes.first.displayValue ?? barcodes.first.rawValue ?? 'No display value';
         });
-        
       } else {
         setState(() {
           _barcodeResult = 'No barcode detected';
