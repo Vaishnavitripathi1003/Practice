@@ -43,6 +43,7 @@ dependencies:
   flutter_swiper_null_safety: ^1.0.2
   webview_flutter: ^4.7.0
   fwfh_webview: ^0.14.8
+  path_provider: ^2.0.9
   get: ^4.6.1
   provider: ^6.1.2
   youtube_player_iframe: ^4.0.4
@@ -65,8 +66,9 @@ dependencies:
   file_picker: ^5.0.1
   flutter_tts: ^3.0.0
   google_ml_kit: ^0.18.0
-  google_mlkit_barcode_scanning: ^0.12.0
   flutter_tesseract_ocr: ^0.4.24
+  barcode_scanner: ^4.2.0
+  excel: ^4.0.3
 
 
 

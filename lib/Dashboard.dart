@@ -9,6 +9,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 
 import 'DocumnetWork/imagetopdf.dart';
 
+import 'DocumnetWork/loadpdffromassets.dart';
 import 'DocumnetWork/viewtopdf.dart';
 import 'MapWork/Mapdemo.dart';
 import 'Players/YoutubePlayerScreen.dart';
@@ -316,10 +317,10 @@ class _DashboardState extends State<Dashboard> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.audiotrack, size: 50, color: Colors.white),
+                            Icon(Icons.explicit_sharp, size: 50, color: Colors.white),
                             SizedBox(height: 10),
                             Text(
-                              'Voice recogniser',
+                              'Excel',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18.0,
@@ -390,7 +391,7 @@ class _DashboardState extends State<Dashboard> {
                         ),
                       ),
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => CameraToPdfPage()));
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => PdfViewerScreen()));
                       },
                     ),
                   ],
