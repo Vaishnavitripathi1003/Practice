@@ -10,10 +10,10 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   GoogleMapController? _controller;
-  final LatLng _initialPosition = LatLng(28.207609, 79.826660); // Example coordinates
+  final LatLng _initialPosition = LatLng(28.207609, 79.826660);
   Set<Polygon> _polygons = {};
-  List<LatLng> _allPolygonPoints = [];
   bool _mapLoaded = false;
+  LatLngBounds? _bounds;
 
   @override
   void initState() {
@@ -27,6 +27,7 @@ class _MapPageState extends State<MapPage> {
       final data = json.decode(response);
 
       List<Polygon> tempPolygons = [];
+      LatLngBounds? bounds;
 
       for (var feature in data['features']) {
         List<dynamic> coordinatesData = feature['geometry']['coordinates'][0];
@@ -42,61 +43,67 @@ class _MapPageState extends State<MapPage> {
             points: polygonLatLngs,
             strokeWidth: 2,
             strokeColor: Colors.red,
-            fillColor: Colors.blueAccent, // Adjust opacity as needed
+            fillColor: Colors.blueAccent.withOpacity(0.5),
             onTap: () {
-              print('Polygon tapped'); // Debug point
+              print('Polygon tapped');
               _showDistrictNameDialog();
             },
           ),
         );
 
-        _allPolygonPoints.addAll(polygonLatLngs);
+        // Calculate the bounds
+        if (bounds == null) {
+          bounds = _calculateBounds(polygonLatLngs);
+        } else {
+          bounds = bounds.extend(_calculateBounds(polygonLatLngs));
+        }
       }
 
       setState(() {
         _polygons.addAll(tempPolygons);
-        _setMapBounds();
+        _bounds = bounds;
         _mapLoaded = true;
       });
+
+      // Print out the bounds for debugging
+      print('Bounds: $_bounds');
+
     } catch (e) {
       print("Error loading polygon: $e");
     }
   }
 
-  void _setMapBounds() {
-    if (_allPolygonPoints.isNotEmpty) {
-      LatLngBounds bounds = _getLatLngBounds(_allPolygonPoints);
-      _controller?.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
-    }
-  }
+  LatLngBounds _calculateBounds(List<LatLng> points) {
+    double? minLat, maxLat, minLng, maxLng;
 
-  LatLngBounds _getLatLngBounds(List<LatLng> points) {
-    double minLat = points.first.latitude;
-    double maxLat = points.first.latitude;
-    double minLng = points.first.longitude;
-    double maxLng = points.first.longitude;
-
-    for (var point in points) {
-      if (point.latitude < minLat) minLat = point.latitude;
-      if (point.latitude > maxLat) maxLat = point.latitude;
-      if (point.longitude < minLng) minLng = point.longitude;
-      if (point.longitude > maxLng) maxLng = point.longitude;
+    for (LatLng point in points) {
+      if (minLat == null || point.latitude < minLat) {
+        minLat = point.latitude;
+      }
+      if (maxLat == null || point.latitude > maxLat) {
+        maxLat = point.latitude;
+      }
+      if (minLng == null || point.longitude < minLng) {
+        minLng = point.longitude;
+      }
+      if (maxLng == null || point.longitude > maxLng) {
+        maxLng = point.longitude;
+      }
     }
 
     return LatLngBounds(
-      southwest: LatLng(minLat, minLng),
-      northeast: LatLng(maxLat, maxLng),
+      southwest: LatLng(minLat!, minLng!),
+      northeast: LatLng(maxLat!, maxLng!),
     );
   }
 
   void _showDistrictNameDialog() {
-    print('Showing district name dialog'); // Debug point
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('District'),
-          content: Text('District Name:'), // You might want to add the district name here
+          content: Text('District Name:'), // Add district name if needed
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -126,7 +133,7 @@ class _MapPageState extends State<MapPage> {
         intersectCount++;
       }
     }
-    return (intersectCount % 2) == 1; // odd = inside, even = outside;
+    return (intersectCount % 2) == 1;
   }
 
   bool _rayCastIntersect(LatLng point, LatLng vertA, LatLng vertB) {
@@ -138,12 +145,17 @@ class _MapPageState extends State<MapPage> {
     final double pX = point.longitude;
 
     if ((aY > pY && bY > pY) || (aY < pY && bY < pY) || (aX < pX && bX < pX)) {
-      return false; // a and b can't both be above or below pt.y, and a or b must be east of pt.x
+      return false;
     }
     final double m = (aY - bY) / (aX - bX);
     final double bee = (-aX) * m + aY;
     final double x = (pY - bee) / m;
     return x > pX;
+  }
+
+  Future<void> _setMapStyle() async {
+    final String style = await rootBundle.loadString('assets/map_style.json');
+    _controller?.setMapStyle(style);
   }
 
   @override
@@ -154,79 +166,55 @@ class _MapPageState extends State<MapPage> {
       ),
       body: Stack(
         children: [
+          Container(
+            color: Colors.white,
+            width: double.infinity,
+            height: double.infinity,
+          ),
           GoogleMap(
             onMapCreated: (GoogleMapController controller) {
               _controller = controller;
-              _setMapBounds();
+              _setMapStyle();
+              if (_bounds != null) {
+                controller.animateCamera(CameraUpdate.newLatLngBounds(_bounds!, 50));
+              }
               setState(() {});
             },
             initialCameraPosition: CameraPosition(
               target: _initialPosition,
-              zoom: 12.0,
+              zoom: 6.0,
             ),
             polygons: _polygons,
-            zoomControlsEnabled: true,
-            zoomGesturesEnabled: true,
-            myLocationEnabled: true,
-            myLocationButtonEnabled: true,
+            zoomControlsEnabled: false,
+            zoomGesturesEnabled: false,
+            myLocationEnabled: false,
+            myLocationButtonEnabled: false,
+            scrollGesturesEnabled: false,
             onTap: (LatLng latLng) {
               _checkPolygonTapped(latLng);
             },
           ),
-          if (_polygons.isEmpty)
+          if (!_mapLoaded)
             Center(
-              child: CircularProgressIndicator(), // Show a loading indicator until polygons are loaded
-            ),
-          if (_controller != null && _mapLoaded)
-            Positioned.fill(
-              child: CustomPaint(
-                painter: PolygonOverlayPainter(_allPolygonPoints, _controller!),
-              ),
+              child: CircularProgressIndicator(),
             ),
         ],
       ),
     );
   }
 }
-class PolygonOverlayPainter extends CustomPainter {
-  final List<LatLng> polygonPoints;
-  final GoogleMapController mapController;
 
-  PolygonOverlayPainter(this.polygonPoints, this.mapController);
-
-  @override
-  void paint(Canvas canvas, Size size) async {
-    final paint = Paint()
-      ..color = Colors.white.withOpacity(0.5)
-      ..style = PaintingStyle.fill;
-
-    // Draw the white background
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
-
-    if (polygonPoints.isNotEmpty) {
-      final path = Path();
-      final firstPoint = await mapController.getScreenCoordinate(polygonPoints.first);
-      path.moveTo(firstPoint.x.toDouble(), firstPoint.y.toDouble());
-
-      for (var i = 1; i < polygonPoints.length; i++) {
-        final screenCoordinate = await mapController.getScreenCoordinate(polygonPoints[i]);
-        path.lineTo(screenCoordinate.x.toDouble(), screenCoordinate.y.toDouble());
-      }
-
-      path.close();
-
-      // Clear the area within the polygon
-      canvas.saveLayer(Rect.largest, Paint()); // Save the current state of the canvas
-      canvas.drawPath(path, Paint()..blendMode = BlendMode.clear); // Clear the polygon area
-      canvas.restore(); // Restore the canvas to the previous state
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return true;
+extension LatLngBoundsExtension on LatLngBounds {
+  LatLngBounds extend(LatLngBounds other) {
+    return LatLngBounds(
+      southwest: LatLng(
+        (southwest.latitude < other.southwest.latitude) ? southwest.latitude : other.southwest.latitude,
+        (southwest.longitude < other.southwest.longitude) ? southwest.longitude : other.southwest.longitude,
+      ),
+      northeast: LatLng(
+        (northeast.latitude > other.northeast.latitude) ? northeast.latitude : other.northeast.latitude,
+        (northeast.longitude > other.northeast.longitude) ? northeast.longitude : other.northeast.longitude,
+      ),
+    );
   }
 }
-
-
-
