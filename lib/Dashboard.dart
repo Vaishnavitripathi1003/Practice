@@ -1,22 +1,23 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:camera/camera.dart';
+import 'package:detectionapp/DocumnetWork/Excel.dart';
 import 'package:detectionapp/DocumnetWork/handwrittentext.dart';
 import 'package:detectionapp/Scanners/barcodescanner.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:just_audio_background/just_audio_background.dart';
+
 
 
 import 'DocumnetWork/imagetopdf.dart';
 
 import 'DocumnetWork/loadpdffromassets.dart';
+import 'DocumnetWork/pdfgenerator.dart';
 import 'DocumnetWork/viewtopdf.dart';
 import 'MapWork/Mapdemo.dart';
 import 'Players/YoutubePlayerScreen.dart';
 import 'Players/audiplayer.dart';
 import 'Scanners/captchagenerator.dart';
-import 'createcustomview/cusom view.dart';
-import 'DocumnetWork/fetchtextfromimage.dart';
+
 
 
 class Dashboard extends StatefulWidget {
@@ -243,7 +244,7 @@ class _DashboardState extends State<Dashboard> {
                         ),
                       ),
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => CustomizedViewEditor()));
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => PDFConverterScroll()));
                       },
                     ),
                     GestureDetector(
@@ -332,7 +333,7 @@ class _DashboardState extends State<Dashboard> {
                       ),
                       onTap: () async {
 
-                        //Navigator.of(context).push(MaterialPageRoute(builder: (context) => PlayerPage()));
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Excelgenerator()));
                       },
                     ),
                   ],
